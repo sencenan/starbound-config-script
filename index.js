@@ -107,10 +107,6 @@ const script = function(cb) {
 		// if not running
 		console.log('server is not running');
 
-		// backup storage
-		backupStorage();
-		console.log('game backed up');
-
 		// pull config
 		pullConfig();
 		console.log('config pulled');
@@ -138,6 +134,10 @@ const run = function() {
 			if (inactivePeriods > 3) {
 				console.log('server should shutdown');
 				stopServer();
+
+				// backup storage
+				backupStorage();
+				console.log('game backed up');
 
 				sudo(
 					['shutdown',  '-h', '0'],
