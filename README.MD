@@ -2,6 +2,10 @@ commit with message "startserver" will start the server. an email will be sent t
 
 when there are no players connected for a hour the server shuts itself down.
 
-for server stats: https://s3.amazonaws.com/starbound-config/stats
+for server public ip: https://s3.amazonaws.com/starbound-config/stats
+
+NOTE:
+- serverStarted: true|false does not mean the server is up or down.
+- if activePeriods > 3, the server is probably down
 
 2
