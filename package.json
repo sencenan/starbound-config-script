@@ -1,0 +1,11 @@
+{
+  "name": "starbound-config-script",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "",
+  "dependencies": {
+    "aws-sdk": "~2.6.12",
+    "sudo": "^1.0.3"
+  }
+}
