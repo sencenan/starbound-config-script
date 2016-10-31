@@ -131,7 +131,7 @@ const run = function() {
 	script(function() {
 		setTimeout(function() {
 
-			if (inactivePeriods > 3) {
+			if (inactivePeriods > 2) {
 				console.log('server should shutdown');
 				stopServer();
 
