@@ -2,4 +2,4 @@ commit with message "startserver" will start the server. an email will be sent t
 
 when there are no players connected for a hour the server shuts itself down.
 
-1
+2
