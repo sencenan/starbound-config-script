@@ -6,6 +6,7 @@ for server public ip: https://s3.amazonaws.com/starbound-config/stats
 
 NOTE:
 - serverStarted: true|false does not mean the server is up or down.
-- if activePeriods > 3, the server is probably down
+- if activePeriods >= 3, the server is probably down
+- If you are still not sure if the server is running just try to connect to it
 
 2
