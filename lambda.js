@@ -16,13 +16,29 @@ const notifyServerUp = (serverStats, cb) => {
     });
 
     sns.publish(
-		{
-			Subject: 'Starbound Server Up @ ' + serverStats.serverIp,
-			Message: JSON.stringify({ serverStats: serverStats }),
-			TopicArn: 'arn:aws:sns:us-east-1:943153259197:starbound-server-notify'
-		},
-		cb
-	);
+        {
+            Subject: 'Starbound Server Up @ ' + serverStats.serverIp,
+            Message: JSON.stringify({ serverStats: serverStats }),
+            TopicArn: 'arn:aws:sns:us-east-1:943153259197:starbound-server-notify'
+        },
+        cb
+    );
+};
+
+const recordStats = (serverStats, cb) => {
+    const s3 = new AWS.S3({
+        region: 'us-east-1'
+    });
+
+    s3.putObject(
+        {
+            Bucket: 'starbound-config',
+            Key: 'stats',
+            Body: JSON.stringify(serverStats),
+            ContentType: 'application/json'
+        },
+        cb
+    );
 };
 
 exports.handler = (event, context, callback) => {
@@ -38,9 +54,16 @@ exports.handler = (event, context, callback) => {
                     startServer(callback);
                     return;
                 }
-            } else if (msg.serverStats && msg.serverStats.serverStarted) {
-                console.log('Notifying server upstart');
-                notifyServerUp(msg.serverStats, callback);
+            } else if (msg.serverStats) {
+                recordStats(msg.serverStats, (err, data) => {
+                    if (msg.serverStats.serverStarted) {
+                        console.log('Notifying server upstart');
+                        notifyServerUp(msg.serverStats, callback);
+                    } else {
+                        callback(err, data);
+                    }
+                });
+
                 return;
             }
         } catch (ex) {
