@@ -7,7 +7,7 @@ const
 const
 	STARBOUND_HOME = '/home/steam/starbound',
 	STARBOUND_STORAGE = '/home/steam/starbound/storage/',
-	INTERVAL = 1000 * 60 * 2;
+	INTERVAL = 1000 * 60 * 15;
 
 const sns = new AWS.SNS({
 	region: 'us-east-1'

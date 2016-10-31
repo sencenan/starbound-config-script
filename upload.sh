@@ -1,1 +1,1 @@
-aws s3 cp --recursive ../starbound-config-script s3://starbound-config/script
+aws s3 sync --delete ../starbound-config-script s3://starbound-config/script --exclude "*.git/*"
