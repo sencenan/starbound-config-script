@@ -44,6 +44,14 @@ const recordStats = (serverStats, cb) => {
 };
 
 exports.handler = (event, context, callback) => {
+    const cb = (err, res) => {
+        // avoid retries
+        console.log('Error: ', err);
+        console.log('Data: ', res);
+
+        callback(null, res);
+    };
+
     if (event.Records.length) {
         try {
             const msg = JSON.parse(event.Records[0].Sns.Message);
@@ -53,26 +61,26 @@ exports.handler = (event, context, callback) => {
             if (msg.head_commit) {
                 if ('startserver' === msg.head_commit.message) {
                     console.log('Starting server');
-                    startServer(callback);
+                    startServer(cb);
                     return;
                 }
             } else if (msg.serverStats) {
                 recordStats(msg.serverStats, (err, data) => {
                     if (msg.serverStats.serverStarted) {
                         console.log('Notifying server upstart');
-                        notifyServerUp(msg.serverStats, callback);
+                        notifyServerUp(msg.serverStats, cb);
                     } else {
-                        callback(err, data);
+                        cb(err, data);
                     }
                 });
 
                 return;
             }
         } catch (ex) {
-            callback(ex);
+            cb(ex);
             return;
         }
     }
 
-    callback(null);
+    cb(null);
 };
