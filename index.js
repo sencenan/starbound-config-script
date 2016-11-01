@@ -1,7 +1,6 @@
 const
 	path = require('path'),
 	AWS = require('aws-sdk'),
-	sudo = require('sudo'),
 	childproc = require('child_process');
 
 const
@@ -133,27 +132,18 @@ const script = function(cb) {
 // run at start and every 15mins thereafter
 const run = function() {
 	script(function() {
-		setTimeout(function() {
+		if (inactivePeriods > 2) {
+			log('server should shutdown');
+			stopServer();
 
-			if (inactivePeriods > 2) {
-				log('server should shutdown');
-				stopServer();
+			// backup storage
+			backupStorage();
+			log('game backed up');
 
-				// backup storage
-				backupStorage();
-				log('game backed up');
-
-				sudo(
-					['shutdown',  '-h', '0'],
-					{
-						password: 'passwordstarbound'
-					}
-				);
-			} else {
-				run();
-			}
-
-		}, INTERVAL);
+			childproc.execSync('shutdown -h 0');
+		} else {
+			setTimeout(run, INTERVAL);
+		}
 	});
 };
 
