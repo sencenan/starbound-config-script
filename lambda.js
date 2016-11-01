@@ -2,12 +2,14 @@
 
 const AWS = require('aws-sdk');
 
+const INSTANCE_ID = 'i-6ba1c4f8';
+
 const startServer = (cb) => {
     const ec2 = new AWS.EC2({
         region: 'us-east-1'
     });
 
-    ec2.startInstances({ InstanceIds: ['i-503b66c9'] }, cb);
+    ec2.startInstances({ InstanceIds: [ INSTANCE_ID ] }, cb);
 };
 
 const notifyServerUp = (serverStats, cb) => {

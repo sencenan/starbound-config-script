@@ -5,8 +5,8 @@ const
 	childproc = require('child_process');
 
 const
-	STARBOUND_HOME = '/home/steam/starbound',
-	STARBOUND_STORAGE = '/home/steam/starbound/storage/',
+	STARBOUND_HOME = '/starbound/server',
+	STARBOUND_STORAGE = '/starbound/server/storage/',
 	INTERVAL = 1000 * 60 * 15;
 
 const sns = new AWS.SNS({
@@ -43,10 +43,10 @@ const
 	getUserCount = function() {
 		return parseInt(
 			childproc.execSync(
-				'netstat -na | egrep \'21025.+ESTABLISHED\' | wc -l'
+				'netstat -na | egrep 21025 | wc -l'
 			).toString(),
 			10
-		);
+		) - 1;
 	},
 	sendStats = function(data = {}, cb) {
 		sns.publish(
@@ -89,6 +89,10 @@ const
 		).toString();
 	};
 
+const log = function(message) {
+	console.log(`${new Date()}: ${message}`);
+};
+
 const script = function(cb) {
 	let
 		userCount = getUserCount(),
@@ -102,18 +106,18 @@ const script = function(cb) {
 
 	if (isRunning()) {
 		// is running
-		console.log(`server is running. ${userCount} users ${inactivePeriods} inactive periods`);
+		log(`server is running. ${userCount} users ${inactivePeriods} inactive periods`);
 	} else {
 		// if not running
-		console.log('server is not running');
+		log('server is not running');
 
 		// pull config
 		pullConfig();
-		console.log('config pulled');
+		log('config pulled');
 
 		// start server
 		startServer();
-		console.log('server started');
+		log('server started');
 		serverStarted = true;
 	}
 
@@ -132,12 +136,12 @@ const run = function() {
 		setTimeout(function() {
 
 			if (inactivePeriods > 2) {
-				console.log('server should shutdown');
+				log('server should shutdown');
 				stopServer();
 
 				// backup storage
 				backupStorage();
-				console.log('game backed up');
+				log('game backed up');
 
 				sudo(
 					['shutdown',  '-h', '0'],
