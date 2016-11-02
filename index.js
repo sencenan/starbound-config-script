@@ -89,7 +89,7 @@ let serverStarted = true;
 
 const script = function(cb) {
 	let
-		userCount = getUserCount(),,
+		userCount = getUserCount(),
 		serverNotRunning = false;
 
 	if (userCount === 0) {
