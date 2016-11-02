@@ -25,20 +25,20 @@ const
 			'killall starbound_server'
 		).toString();
 	},
-	startServer = function() {
-		if (!isRunning()) {
-			const child = childproc.spawn(
-				'./starbound_server',
-				[],
-				{
-					cwd: path.join(STARBOUND_HOME, 'linux'),
-					detached: true
-				}
-			);
+	// startServer = function() {
+	// 	if (!isRunning()) {
+	// 		const child = childproc.spawn(
+	// 			'./starbound_server',
+	// 			[],
+	// 			{
+	// 				cwd: path.join(STARBOUND_HOME, 'linux'),
+	// 				detached: true
+	// 			}
+	// 		);
 
-			child.unref();
-		}
-	},
+	// 		child.unref();
+	// 	}
+	// },
 	getUserCount = function() {
 		return parseInt(
 			childproc.execSync(
@@ -74,14 +74,6 @@ const
 			}
 		);
 	},
-	pullConfig = function() {
-		childproc.execSync(
-			'aws s3 cp s3://starbound-config/starbound_server.config .',
-			{
-				cwd: STARBOUND_STORAGE
-			}
-		);
-	},
 	getPublicIp = function() {
 		return childproc.execSync(
 			'curl http://169.254.169.254/latest/meta-data/public-ipv4'
@@ -92,10 +84,13 @@ const log = function(message) {
 	console.log(`${new Date()}: ${message}`);
 };
 
+
+let serverStarted = true;
+
 const script = function(cb) {
 	let
-		userCount = getUserCount(),
-		serverStarted = false;
+		userCount = getUserCount(),,
+		serverNotRunning = false;
 
 	if (userCount === 0) {
 		inactivePeriods += 1;
@@ -109,15 +104,7 @@ const script = function(cb) {
 	} else {
 		// if not running
 		log('server is not running');
-
-		// pull config
-		pullConfig();
-		log('config pulled');
-
-		// start server
-		startServer();
-		log('server started');
-		serverStarted = true;
+		serverNotRunning = true;
 	}
 
 	// in all case, send sns message
@@ -125,6 +112,7 @@ const script = function(cb) {
 		userCount: userCount,
 		inactivePeriods: inactivePeriods,
 		serverStarted: serverStarted,
+		serverNotRunning: serverNotRunning,
 		serverIp: getPublicIp()
 	}, cb);
 };
@@ -132,6 +120,8 @@ const script = function(cb) {
 // run at start and every 15mins thereafter
 const run = function() {
 	script(function() {
+		serverStarted = false; //TODO rename this flag
+
 		if (inactivePeriods > 2) {
 			log('server should shutdown');
 			stopServer();

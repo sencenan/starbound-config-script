@@ -19,3 +19,10 @@ forever start \
 	-e ${HOME}/log/starbound-config-script.stderr.log \
 	${HOME}/starbound-config-script/index.js
 echo ">>>>> forever start done."
+
+echo ">>>>> pull config"
+node ${HOME}/starbound-config-script/pull-config.js
+
+echo ">>>>> start server"
+cd ${HOME}/server/linux
+nohup ${HOME}/server/linux/starbound_server > ${HOME}/log/server.log &
